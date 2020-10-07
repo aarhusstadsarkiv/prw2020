@@ -132,3 +132,8 @@ dmypy.json
 *.sublime-workspace
 *.sublime-project
 
+# VS Code
+.vscode
+
+# Data
+data/
