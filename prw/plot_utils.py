@@ -1,16 +1,16 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
+from typing import List
 
 from matplotlib.axes import Axes
-from typing import List
 
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
 
 
-def add_vertical_value_labels(ax: Axes, spacing: int = 5) -> None:
+def add_vertical_value_labels(ax: Axes, spacing: float = 5) -> None:
     """Add labels to the end of each bar in a bar chart."""
 
     # For each bar: Place a label
@@ -65,7 +65,7 @@ def add_horizontal_value_labels(ax: Axes, spacing: float = 5) -> None:
             # Horizontally align label at right
             ha = "right"
 
-        label = f"{x_value}"
+        label = f"{int(x_value)}"
         # Create annotation
         ax.annotate(
             label,  # Use `label` as label
@@ -76,3 +76,4 @@ def add_horizontal_value_labels(ax: Axes, spacing: float = 5) -> None:
             va="center",  # Vertically align label differently
             fontsize=8,
         )
+

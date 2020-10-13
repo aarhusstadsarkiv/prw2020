@@ -1,16 +1,20 @@
 # -----------------------------------------------------------------------------
 # Imports
 # -----------------------------------------------------------------------------
-
 import subprocess
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 from pathlib import Path
-from typing import List, Literal
-from tqdm import tqdm
+from typing import List
+from typing import Literal
+
+import colorcet as cc
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib import rcParams
-from prw.plot_utils import add_horizontal_value_labels, add_vertical_value_labels
+from tqdm import tqdm
+
+from prw.plot_utils import add_horizontal_value_labels
+from prw.plot_utils import add_vertical_value_labels
 
 ## Matplotlib params
 rcParams["axes.facecolor"] = "#e9e9e9"
@@ -30,9 +34,13 @@ def parse_data(csv_file: Path, bof_bytes: int) -> pd.DataFrame:
     return df
 
 
-def barh_plot_df(df: pd.DataFrame, title: str, save_to: Path) -> None:
+def barh_plot_df(df: pd.DataFrame, title: str, save_to: Path, log: bool=True) -> None:
+    plot_aspect = 0.5
+    plot_height = 10
+    plot_width = int(plot_height*plot_aspect)
     plt.figure()
-    ax = df.plot.barh(grid=True, color="seagreen")
+    plt.rcParams["figure.figsize"] = (plot_height,plot_width)
+    ax = df.plot.barh(grid=True, colormap=cc.m_glasbey_cool)
     # Axes
     ax.grid(color="white")
     # if "123" in title:
@@ -41,6 +49,8 @@ def barh_plot_df(df: pd.DataFrame, title: str, save_to: Path) -> None:
     #     ax.set_xlim(0, df.max() + 10)
     # Title & labels
     plt.title(title)
+    if log:
+        ax.set_xscale("log")
     add_horizontal_value_labels(ax, spacing=0.5)
     plt.xlabel("Count")
 
@@ -50,7 +60,7 @@ def barh_plot_df(df: pd.DataFrame, title: str, save_to: Path) -> None:
 
 def bar_plot_df(df: pd.DataFrame, title: str, save_to: Path) -> None:
     plt.figure()
-    ax = df.plot.bar(grid=True, rot=45)
+    ax = df.plot.bar(grid=True, rot=45, colormap=cc.m_glasbey_cool)
     # Axes
     ax.grid(color="white")
     # if "123" in title:
@@ -102,19 +112,19 @@ def main() -> None:
         if "Targa" in inx:
             new_index.append("Targa Image")
     grouped.index = pd.Index(new_index, name="file_info")
-    bar_plot_df(grouped, "123 Signatures & File Information", save_to=plot_path/"123_group.png")
+    barh_plot_df(grouped, "123 Signatures & File Information", save_to=plot_path/"123_group.png")
         
     # print(linux_123)
     # plot_path: Path = Path(__file__).parent.resolve() / "plots"
-    # df_123: pd.DataFrame = parse_data(data_path / "123_files.csv", 16)
-    # df_123 = df_123[df_123.puid == "aca-fmt/1"]
-    # df_123.to_csv(data_path / "test.csv", index=False)
-    # grouped_123 = df_123.groupby("bof")["id"].count()
-    # bar_plot_df(
-    #     grouped_123,
-    #     "123 File Signatures",
-    #     save_to=plot_path / "123_plot.png",
-    # )
+    df_123: pd.DataFrame = parse_data(data_path / "open_123_files.csv", 16)
+    df_123 = df_123[df_123.puid == "aca-fmt/1"]
+    df_123.to_csv(data_path / "test.csv", index=False)
+    grouped_123 = df_123.groupby("bof")["id"].count()
+    barh_plot_df(
+        grouped_123,
+        "123 File Signatures",
+        save_to=plot_path / "open_123_plot.png", log=False
+    )
 
     # for row in df_123.itertuples():
     #     print(Path(row.path))
@@ -133,3 +143,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
